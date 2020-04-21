@@ -1,0 +1,19 @@
+---
+- name: install haskell packages
+  apt: name={{ item }} state=latest update_cache=yes install_recommends=yes
+    state: present
+    update_cache: no
+    install_recommends: no
+    name: [ 'cabal-install'
+            'haskell-platform' ]
+
+- name: install supercollider packages
+  apt: name={{ item }} state=latest update_cache=yes install_recommends=yes
+    state: present
+    update_cache: no
+    install_recommends: no
+    name: [ 'supercollider',
+            'sc3-plugins',
+            'sc3-plugins-language',
+            'sc3-plugins-server',
+            'zlib1g-dev' ]
