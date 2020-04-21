@@ -1,6 +1,6 @@
 ---
 - name: install haskell packages
-  apt: name={{ item }} state=latest update_cache=yes install_recommends=yes
+  apt:
     state: present
     update_cache: no
     install_recommends: no
@@ -8,7 +8,7 @@
             'haskell-platform' ]
 
 - name: install supercollider packages
-  apt: name={{ item }} state=latest update_cache=yes install_recommends=yes
+  apt:
     state: present
     update_cache: no
     install_recommends: no
