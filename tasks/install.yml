@@ -4,7 +4,7 @@
     state: present
     update_cache: no
     install_recommends: no
-    name: [ 'cabal-install'
+    name: [ 'cabal-install',
             'haskell-platform' ]
 
 - name: install supercollider packages
