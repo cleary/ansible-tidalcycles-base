@@ -2,7 +2,7 @@
 - name: install haskell packages
   apt:
     state: present
-    update_cache: no
+    update_cache: yes
     install_recommends: no
     name: [ 'cabal-install',
             'haskell-platform' ]
@@ -10,7 +10,7 @@
 - name: install supercollider packages
   apt:
     state: present
-    update_cache: no
+    update_cache: yes
     install_recommends: no
     name: [ 'supercollider',
             'sc3-plugins',
