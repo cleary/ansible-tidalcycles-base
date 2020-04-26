@@ -1,5 +1,12 @@
 ---
 
+- name: make sure our user is in the audio group
+  user: 
+    name: "{{ansible_env.SUDO_USER}}"
+    groups: audio
+    append: yes
+  register: adduser
+
 - block:
   - name: update cabal
     shell: cabal update  
@@ -8,7 +15,39 @@
     shell: cabal install tidal
     register: tidin
     changed_when: "not tidin.stdout is search('All the requested packages are already installed:')"
+
+  - name: copy superdirt_init.scd template
+    template:
+      src: templates/superdirt_init.scd.template
+      dest: /tmp/superdirt_init.scd
+      mode: 0640
+
+  - name: install SuperDirt and samples in .local/share/SuperCollider/, via sclang shell
+    shell: sh -c 'sclang /tmp/superdirt_init.scd | { sed "/SuperDirt installed/ q" && sleep 30; kill $$; }'
+    failed_when: false
+    register: sdin
+
+  - name: check success of SuperDirt install
+    fail:
+      msg: "SuperDirt install failed: {{ sdin.stdout }}"
+    failed_when: "not sdin.stdout is search('SuperDirt installed')"
+
+  - name: copy SuperCollider startup.scd template (backup any existing)
+    template:
+      src: templates/startup.scd.template
+      dest: "/home/{{ansible_env.SUDO_USER}}/.config/SuperCollider/startup.scd"
+      mode: 0640
+      backup: yes
+
   become: yes
   become_method: su
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
+
+- debug:
+    msg: "NOTE: {{ansible_env.SUDO_USER}} has been added to audio group, logout/reboot **after** ansible finishes (waiting for 10s)"
+  when: adduser.changed
+
+- wait_for:
+    timeout: 10
+  when: adduser.changed
