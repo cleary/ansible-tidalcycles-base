@@ -51,3 +51,13 @@
 - wait_for:
     timeout: 10
   when: adduser.changed
+
+- name: get pid of dangling sclang process we may have left behind
+  shell: ps aux | grep sclang | grep -m 1 superdirt_init.scd | awk '{print $2}'
+  register: scpid
+  changed_when: false
+
+- name: kill dangling sclang process if required
+  shell: "kill {{ scpid.stdout }}"
+  when: scpid.stdout != ""
+  failed_when: false
