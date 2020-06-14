@@ -1,0 +1,22 @@
+---
+
+- block:
+  - name: install xvfb
+    apt:
+      state: latest
+      update_cache: yes
+      install_recommends: no
+      name: xvfb
+
+  - name: install xvfb service file temporarily
+    template:
+      src: templates/xvfb.tmp.service.template
+      dest: /etc/systemd/system/xvfb.tmp.service
+      owner: root
+      group: root
+
+  - name: start xvfb service
+    systemd:
+      state: started
+      name: xvfb.tmp.service
+  when: ansible_env.DISPLAY is not defined

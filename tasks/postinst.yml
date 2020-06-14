@@ -22,15 +22,31 @@
       dest: /tmp/superdirt_init.scd
       mode: 0640
 
-  - name: install SuperDirt and samples in .local/share/SuperCollider/, via sclang shell
-    shell: sh -c 'sclang /tmp/superdirt_init.scd | { sed "/SuperDirt installed/ q" && sleep 30; kill $$; }'
-    failed_when: false
-    register: sdin
+  - block:
+    - name: install SuperDirt and samples in .local/share/SuperCollider/, via sclang shell
+      shell: sh -c 'sclang /tmp/superdirt_init.scd | { sed "/SuperDirt installed/ q" && sleep 30; kill $$; }'
+      failed_when: false
+      register: sdin
 
-  - name: check success of SuperDirt install
-    fail:
-      msg: "SuperDirt install failed: {{ sdin.stdout }}"
-    failed_when: "not sdin.stdout is search('SuperDirt installed')"
+    - name: check success of SuperDirt install
+      fail:
+        msg: "SuperDirt install failed: {{ sdin.stdout }}"
+      failed_when: "not sdin.stdout is search('SuperDirt installed')"
+    when: ansible_env.DISPLAY is defined
+
+  - block:
+    - name: install SuperDirt and samples in .local/share/SuperCollider/, via sclang shell (HEADLESS option)
+      shell: sh -c 'sclang /tmp/superdirt_init.scd | { sed "/SuperDirt installed/ q" && sleep 30; kill $$; }'
+      failed_when: false
+      register: hsdin
+      environment:
+        DISPLAY: :99
+
+    - name: check success of SuperDirt install
+      fail:
+        msg: "SuperDirt install failed: {{ hsdin.stdout }}"
+      failed_when: "not hsdin.stdout is search('SuperDirt installed')"
+    when: ansible_env.DISPLAY is not defined
 
   - name: copy SuperCollider startup.scd template (backup any existing)
     template:
@@ -61,3 +77,10 @@
   shell: "kill {{ scpid.stdout }}"
   when: scpid.stdout != ""
   failed_when: false
+
+- block:
+  - name: stop xvfb service
+    systemd:
+      state: stopped
+      name: xvfb.tmp.service
+  when: ansible_env.DISPLAY is not defined
