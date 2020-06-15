@@ -12,7 +12,8 @@
     state: present
     update_cache: yes
     install_recommends: no
-    name: [ 'supercollider',
+    name: [ 'git',
+            'supercollider',
             'sc3-plugins',
             'sc3-plugins-language',
             'sc3-plugins-server',
