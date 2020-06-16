@@ -1,0 +1,15 @@
+---
+
+- block:
+  - name: update cabal
+    shell: cabal update  
+  
+  - name: compile and install hosc-0.17
+    shell: cabal install hosc-0.17
+    register: hoscin
+    changed_when: "not hoscin.stdout is search('All the requested packages are already installed:')"
+
+  become: yes
+  become_method: su
+  become_user: "{{ansible_env.SUDO_USER}}"
+  become_flags: '-s /bin/bash'
