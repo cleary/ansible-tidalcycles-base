@@ -1,0 +1,3 @@
+---
+
+sc_dir: "/home/{{ansible_env.SUDO_USER}}/.config/SuperCollider/"
