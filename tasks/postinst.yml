@@ -64,7 +64,7 @@
   - name: copy SuperCollider startup.scd template (backup any existing)
     template:
       src: templates/startup.scd.template
-      dest: "{{ sc_dir }}"
+      dest: "{{ sc_dir }}/startup.scd"
       mode: 0640
       backup: yes
 
