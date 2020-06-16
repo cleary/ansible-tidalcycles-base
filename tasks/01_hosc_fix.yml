@@ -1,11 +1,8 @@
 ---
 
 - block:
-  - name: update cabal
-    shell: cabal update  
-  
-  - name: compile and install hosc-0.17
-    shell: cabal install hosc-0.17
+  - name: compile and install tidal-1.5.2
+    shell: cabal install tidal-1.5.2
     register: hoscin
     changed_when: "not hoscin.stdout is search('All the requested packages are already installed:')"
 
