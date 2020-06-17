@@ -11,15 +11,6 @@
   - name: update cabal
     shell: cabal update  
 
-  - block:
-    - name: reset supercollider config dir for older distros
-      set_fact:
-        sc_dir: "/home/{{ansible_env.SUDO_USER}}/.local/share/SuperCollider/"
-
-    when: >
-      (ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 20) or
-      (ansible_distribution == "Linux Mint" and ansible_distribution_major_version|int < 20)
-  
   - name: compile and install tidal
     shell: cabal install tidal
     register: tidin
@@ -57,6 +48,12 @@
         msg: "SuperDirt install failed: {{ hsdin.stdout }}"
       failed_when: "not hsdin.stdout is search('SuperDirt installed')"
     when: ansible_env.DISPLAY is not defined
+
+  - name: make sure our SuperCollider config dir exists
+    file:
+      path: "{{ sc_dir }}/startup.scd"
+      state: directory
+      mode: 0755
 
   - name: copy SuperCollider startup.scd template (backup any existing)
     template:
