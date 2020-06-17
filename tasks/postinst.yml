@@ -12,9 +12,6 @@
     shell: cabal update  
 
   - block:
-    - name: workaround hosc version issue on older distros
-      include_tasks: 01_hosc_fix.yml
-
     - name: reset supercollider config dir for older distros
       set_fact:
         sc_dir: "/home/{{ansible_env.SUDO_USER}}/.local/share/SuperCollider/"
