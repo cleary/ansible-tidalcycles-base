@@ -51,7 +51,7 @@
 
   - name: make sure our SuperCollider config dir exists
     file:
-      path: "{{ sc_dir }}/startup.scd"
+      path: "{{ sc_dir }}"
       state: directory
       mode: 0755
 
