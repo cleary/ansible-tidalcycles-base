@@ -14,6 +14,7 @@ s.reboot { // server options are only updated on reboot
 	s.options.maxNodes = 1024 * 32; // increase this if you are getting drop outs and the message "too many nodes"
 	s.options.numOutputBusChannels = 2; // set this to your hardware output channel size, if necessary
 	s.options.numInputBusChannels = 2; // set this to your hardware output channel size, if necessary
+    s.options.maxLogins = 8; // optional, required to enable feedforward VU meter
 	// boot the server and start SuperDirt
 	s.waitForBoot {
 		~dirt = SuperDirt(2, s); // two output channels, increase if you want to pan across more channels
@@ -24,8 +25,12 @@ s.reboot { // server options are only updated on reboot
   		~dirt.loadSoundFiles("{{ item }}/*");
   {% endfor %}
 {% endif %}
+
 		// s.sync; // optionally: wait for samples to be read
 		~dirt.start(57120, 0 ! 12);   // start listening on port 57120, create two busses each sending audio to channel 0
+
+        // optional, enable feedforward vu meter
+        ~dirt.startSendRMS;
 
 		// optional, needed for convenient access from sclang:
 		(
