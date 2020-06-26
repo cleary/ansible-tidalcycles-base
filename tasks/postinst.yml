@@ -8,10 +8,10 @@
   register: adduser
 
 - name: exit if sclang/supercollider is already running
-  pids:
-    name: sclang
+  command: pgrep sclang
   register: scpid
-  failed_when: scpid.pids|length > 0
+  failed_when: scpid.rc == 0
+  changed_when: false
 
 - block:
   - name: update cabal
@@ -54,7 +54,7 @@
       DISPLAY: "{{ display }}"
     register: sdin
 
-  - name: install/update SuperDirt (logging to: /tmp/sclang_tidal.log)
+  - name: install SuperDirt, logging to /tmp/sclang_tidal.log
     shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd 2>1 > /tmp/sclang_tidal.log"
     environment:
       DISPLAY: "{{ display }}"
