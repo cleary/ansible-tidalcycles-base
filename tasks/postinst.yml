@@ -7,15 +7,11 @@
     append: yes
   register: adduser
 
-- name: make sure supercollider/sclang is not running
+- name: exit if sclang/supercollider is already running
   pids:
     name: sclang
   register: scpid
-
-- name: fail if sclang is running
-  fail:
-    msg: "SuperCollider is running (pid: {{ scpid.pids }}), make sure you have shutdown all sclang processes before running this role"
-  when: scpid.pids|length > 0
+  failed_when: scpid.pids|length > 0
 
 - block:
   - name: update cabal
@@ -41,31 +37,28 @@
       - superdirt_install
       - superdirt_check_install
 
-  - block:
-    - name: install/update SuperDirt and samples in .local/share/SuperCollider/, via sclang shell
-      command: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd"
-      failed_when: false
-
-    - name: check if superdirt installed successfully
-      command: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_check_install.scd"
-      changed_when: false
-
-    when: ansible_env.DISPLAY is defined
-
-  - block:
-    - name: install/update SuperDirt and samples in .local/share/SuperCollider/, via sclang shell (HEADLESS option)
-      command: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd"
-      failed_when: false
-      environment:
-        DISPLAY: :99
-
-    - name: check if superdirt installed successfully
-      command: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_check_install.scd"
-      environment:
-        DISPLAY: :99
-      changed_when: false
-
+  - name: set DISPLAY variable for sclang running
+    set_fact:
+      display: :99
     when: ansible_env.DISPLAY is not defined
+
+  - set_fact:
+      display: "{{ ansible_env.DISPLAY }}"
+    when: display is not defined
+
+  - name: check if SuperDirt is installed
+    command: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_check_install.scd"
+    changed_when: false
+    failed_when: false
+    environment:
+      DISPLAY: "{{ display }}"
+    register: sdin
+
+  - name: install/update SuperDirt (logging to: /tmp/sclang_tidal.log)
+    shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd 2>1 > /tmp/sclang_tidal.log"
+    environment:
+      DISPLAY: "{{ display }}"
+    when: sdin.rc == 1
 
   - name: make sure our SuperCollider config dir exists
     file:
