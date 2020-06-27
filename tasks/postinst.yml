@@ -54,8 +54,8 @@
       DISPLAY: "{{ display }}"
     register: sdin
 
-  - name: install SuperDirt, logging to /tmp/sclang_tidal.log
-    shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd 2>1 > /tmp/sclang_tidal.log"
+  - name: install SuperDirt, logging to ~/.local/share/sclang_tidal.log
+    shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd 2>1 > /home/{{ansible_env.SUDO_USER}}/.local/share/sclang_tidal.log"
     environment:
       DISPLAY: "{{ display }}"
     when: sdin.rc == 1
