@@ -1,0 +1,1 @@
+if (Quarks.isInstalled("SuperDirt"), {0.exit;}, {1.exit});

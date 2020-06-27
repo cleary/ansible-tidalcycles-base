@@ -1,4 +1,10 @@
 ---
+- name: install python psutil module
+  apt:
+    state: latest
+    update_cache: yes
+    install_recommends: no
+    name: python3-psutil
 
 - block:
   - name: install xvfb

@@ -7,6 +7,12 @@
     append: yes
   register: adduser
 
+- name: exit if sclang/supercollider is already running
+  command: "pgrep sclang -u {{ansible_env.SUDO_USER}}"
+  register: scpid
+  failed_when: scpid.rc == 0
+  changed_when: false
+
 - block:
   - name: update cabal
     shell: cabal update  
@@ -16,38 +22,43 @@
     register: tidin
     changed_when: "not tidin.stdout is search('All the requested packages are already installed:')"
 
-  - name: copy superdirt_init.scd template
+  - name: create template dest directory ~/.local/share (if required)
+    file:
+      path: "/home/{{ansible_env.SUDO_USER}}/.local/share"
+      state: directory
+      mode: '0775'
+
+  - name: copy superdirt_*.scd templates to ~/.local/share/
     template:
-      src: templates/superdirt_init.scd.template
-      dest: /tmp/superdirt_init.scd
+      src: "templates/{{ item }}.scd.template"
+      dest: "/home/{{ansible_env.SUDO_USER}}/.local/share/{{ item }}.scd"
       mode: 0640
+    with_items:
+      - superdirt_install
+      - superdirt_check_install
 
-  - block:
-    - name: install SuperDirt and samples in .local/share/SuperCollider/, via sclang shell
-      shell: sh -c 'sclang /tmp/superdirt_init.scd | { sed "/SuperDirt installed/ q" && sleep 30; kill $$; }'
-      failed_when: false
-      register: sdin
-
-    - name: check success of SuperDirt install
-      fail:
-        msg: "SuperDirt install failed: {{ sdin.stdout }}"
-      failed_when: "not sdin.stdout is search('SuperDirt installed')"
-
-    when: ansible_env.DISPLAY is defined
-
-  - block:
-    - name: install SuperDirt and samples in .local/share/SuperCollider/, via sclang shell (HEADLESS option)
-      shell: sh -c 'sclang /tmp/superdirt_init.scd | { sed "/SuperDirt installed/ q" && sleep 30; kill $$; }'
-      failed_when: false
-      register: hsdin
-      environment:
-        DISPLAY: :99
-
-    - name: check success of SuperDirt install
-      fail:
-        msg: "SuperDirt install failed: {{ hsdin.stdout }}"
-      failed_when: "not hsdin.stdout is search('SuperDirt installed')"
+  - name: set DISPLAY variable for sclang running
+    set_fact:
+      display: :99
     when: ansible_env.DISPLAY is not defined
+
+  - set_fact:
+      display: "{{ ansible_env.DISPLAY }}"
+    when: display is not defined
+
+  - name: check if SuperDirt is installed
+    command: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_check_install.scd"
+    changed_when: false
+    failed_when: false
+    environment:
+      DISPLAY: "{{ display }}"
+    register: sdin
+
+  - name: install SuperDirt, logging to /tmp/sclang_tidal.log
+    shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd 2>1 > /tmp/sclang_tidal.log"
+    environment:
+      DISPLAY: "{{ display }}"
+    when: sdin.rc == 1
 
   - name: make sure our SuperCollider config dir exists
     file:
@@ -74,16 +85,6 @@
 - wait_for:
     timeout: 10
   when: adduser.changed
-
-- name: get pid of dangling sclang process we may have left behind
-  shell: ps aux | grep sclang | grep -m 1 superdirt_init.scd | awk '{print $2}'
-  register: scpid
-  changed_when: false
-
-- name: kill dangling sclang process if required
-  shell: "kill {{ scpid.stdout }}"
-  when: scpid.stdout != ""
-  failed_when: false
 
 - block:
   - name: stop xvfb service
