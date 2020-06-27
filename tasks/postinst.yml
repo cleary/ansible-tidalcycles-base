@@ -8,7 +8,7 @@
   register: adduser
 
 - name: exit if sclang/supercollider is already running
-  command: pgrep sclang
+  command: "pgrep sclang -u {{ansible_env.SUDO_USER}}"
   register: scpid
   failed_when: scpid.rc == 0
   changed_when: false
