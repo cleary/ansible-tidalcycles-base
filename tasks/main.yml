@@ -1,8 +1,8 @@
 ---
 
-- include_tasks: preinst.yml
+- include: preinst.yml
 
-- include_tasks: install.yml      
+- include: install.yml
 
-- include_tasks: postinst.yml
+- include: postinst.yml
 
