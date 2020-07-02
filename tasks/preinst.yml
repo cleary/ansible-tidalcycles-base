@@ -19,3 +19,11 @@
       state: started
       name: xvfb.tmp.service
   when: ansible_env.DISPLAY is not defined
+
+- name: install ansible task dependencies
+  apt:
+    state: present
+    update_cache: yes
+    install_recommends: no
+    name: [ 'coreutils' ]
+
