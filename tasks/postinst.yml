@@ -47,7 +47,7 @@
     when: display is not defined
 
   - name: check if SuperDirt is installed
-    command: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_check_install.scd"
+    shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_check_install.scd >> /home/{{ansible_env.SUDO_USER}}/.local/share/sc_check.log"
     changed_when: false
     failed_when: false
     environment:
@@ -55,7 +55,7 @@
     register: sdin
 
   - name: install SuperDirt
-    shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd"
+    shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd >> /home/{{ansible_env.SUDO_USER}}/.local/share/sc_install.log"
     environment:
       DISPLAY: "{{ display }}"
     when: sdin.rc == 1
