@@ -72,6 +72,8 @@
       dest: "{{ sc_dir }}/startup.scd"
       mode: 0640
       backup: yes
+    tags:
+    - config
 
   become: yes
   become_method: su
