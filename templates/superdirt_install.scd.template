@@ -1,1 +1,1 @@
-Quarks.checkForUpdates({Quarks.install("SuperDirt", "v1.1.3"); if (Quarks.isInstalled("SuperDirt"), {0.exit;}, {1.exit;});});
+Quarks.checkForUpdates({Quarks.install("SuperDirt", "{{ superdirt_ver }}"); if (Quarks.isInstalled("SuperDirt"), {0.exit;}, {1.exit;});});

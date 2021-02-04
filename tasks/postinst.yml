@@ -36,6 +36,7 @@
     with_items:
       - superdirt_install
       - superdirt_check_install
+      - superdirt_uninstall
 
   - name: set DISPLAY variable for sclang running
     set_fact:
@@ -47,18 +48,24 @@
     when: display is not defined
 
   - name: check if SuperDirt is installed
-    shell: "timeout 10s sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_check_install.scd >> /home/{{ansible_env.SUDO_USER}}/.local/share/sc_check.log"
+    shell: "timeout 10s sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_check_install.scd 2>&1 >> /home/{{ansible_env.SUDO_USER}}/.local/share/sc_check.log"
     changed_when: false
     failed_when: false
     environment:
       DISPLAY: "{{ display }}"
     register: sdin
 
+  - name: uninstall SuperDirt
+    shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_uninstall.scd 2>&1 >> /home/{{ansible_env.SUDO_USER}}/.local/share/sc_check.log"
+    failed_when: false
+    environment:
+      DISPLAY: "{{ display }}"
+    when: sdin.rc == 0
+
   - name: install SuperDirt
     shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd >> /home/{{ansible_env.SUDO_USER}}/.local/share/sc_install.log"
     environment:
       DISPLAY: "{{ display }}"
-    when: sdin.rc == 1
 
   - name: make sure our SuperCollider config dir exists
     file:
