@@ -1,6 +1,15 @@
 ---
 
+sc_dir: "/home/{{ansible_env.SUDO_USER}}/.config/SuperCollider/"
 
-supercollider_dir: "/home/{{ansible_env.SUDO_USER}}/.config/SuperCollider/"
+# supercollider startup.scd defaults, intended for override in vars/all.yml
+sc_option_numBuffers: "1024 * 256"
+sc_option_memSize: "8192 * 32"
+sc_option_numWireBufs: 64
+sc_option_maxNodes: "1024*32"
+sc_option_numOutputBusChannels: 2
+sc_option_numInputBusChannels: 2
+sc_option_maxLogins: 8
+
 superdirt_ver: v1.7.2
 

@@ -1,6 +1,7 @@
 /*
-This is an example startup file. You can load it from your startup file
-(to be found in Platform.userAppSupportDir +/+ "startup.scd")
+This is an ansible generated startup file.
+Modifications will be overwritten on next run,
+but a backup copy will exist in the same dir as this file
 */
 
 
@@ -8,13 +9,13 @@ This is an example startup file. You can load it from your startup file
 s.reboot { // server options are only updated on reboot
 	// configure the sound server: here you could add hardware specific options
 	// see http://doc.sccode.org/Classes/ServerOptions.html
-	s.options.numBuffers = 1024 * 256; // increase this if you need to load more samples
-	s.options.memSize = 8192 * 32; // increase this if you get "alloc failed" messages
-	s.options.numWireBufs = 64; // increase this if you get "exceeded number of interconnect buffers" messages 
-	s.options.maxNodes = 1024 * 32; // increase this if you are getting drop outs and the message "too many nodes"
-	s.options.numOutputBusChannels = 2; // set this to your hardware output channel size, if necessary
-	s.options.numInputBusChannels = 2; // set this to your hardware output channel size, if necessary
-    s.options.maxLogins = 8; // optional, required to enable feedforward VU meter
+	s.options.numBuffers = {{ sc_option_numBuffers }}; // increase this if you need to load more samples
+	s.options.memSize = {{ sc_option_memSize }}; // increase this if you get "alloc failed" messages
+	s.options.numWireBufs = {{ sc_option_numWireBufs }}; // increase this if you get "exceeded number of interconnect buffers" messages 
+	s.options.maxNodes = {{ sc_option_maxNodes }}; // increase this if you are getting drop outs and the message "too many nodes"
+	s.options.numOutputBusChannels = {{ sc_option_numOutputBusChannels }}; // set this to your hardware output channel size, if necessary
+	s.options.numInputBusChannels = {{ sc_option_numInputBusChannels }}; // set this to your hardware output channel size, if necessary
+    s.options.maxLogins = {{ sc_option_maxLogins }}; // optional, required to enable feedforward VU meter
 	// boot the server and start SuperDirt
 	s.waitForBoot {
 		~dirt = SuperDirt(2, s); // two output channels, increase if you want to pan across more channels
@@ -27,7 +28,11 @@ s.reboot { // server options are only updated on reboot
 {% endif %}
 
 		// s.sync; // optionally: wait for samples to be read
+{% if sc_option_numOutputBusChannels == 2 %}
 		~dirt.start(57120, 0 ! 12);   // start listening on port 57120, create two busses each sending audio to channel 0
+{% else %}
+		~dirt.start(57120, [{% for i in range(0, sc_option_numOutputBusChannels, 2 ) %}{{ i }}{% if i != sc_option_numOutputBusChannels - 2 %}, {%endif %}{% endfor %}]);   // start listening on port 57120, create {{ (sc_option_numOutputBusChannels/2)|int }} stereo busses
+{% endif %}
 
         // optional, enable feedforward vu meter
         ~dirt.startSendRMS;
