@@ -1,4 +1,6 @@
 ---
 
-sc_dir: "/home/{{ansible_env.SUDO_USER}}/.config/SuperCollider/"
+
+supercollider_dir: "/home/{{ansible_env.SUDO_USER}}/.config/SuperCollider/"
 superdirt_ver: v1.7.2
+

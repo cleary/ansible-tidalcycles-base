@@ -52,14 +52,14 @@
 
   - name: make sure our SuperCollider config dir exists
     file:
-      path: "{{ sc_dir }}"
+      path: "{{ supercollider_dir }}"
       state: directory
       mode: 0755
 
   - name: copy SuperCollider startup.scd template (backup any existing)
     template:
       src: templates/startup.scd.template
-      dest: "{{ sc_dir }}/startup.scd"
+      dest: "{{ supercollider_dir }}/startup.scd"
       mode: 0640
       backup: yes
     tags:
