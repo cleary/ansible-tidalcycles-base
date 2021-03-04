@@ -37,6 +37,20 @@ s.reboot { // server options are only updated on reboot
         // optional, enable feedforward vu meter
         ~dirt.startSendRMS;
 
+{% if custom_midi_clients is defined %}
+        // midi
+        (
+            MIDIClient.init;
+
+  {% for item in custom_midi_clients %}
+          ~{{ item.port_name.lower() | replace( " ", "") | replace( "-", "") }} = MIDIOut.newByName("{{ item.full_name }}", "{{ item.port_name }}");
+            ~{{ item.port_name.lower() | replace( " ", "") | replace( "-", "") }}.latency = {{ item.latency | default("0") }};
+            ~dirt.soundLibrary.addMIDI(\{{ item.livecode_name }}, ~{{ item.port_name.lower() | replace( " ", "") | replace( "-", "") }});
+
+  {% endfor %}
+      );
+{% endif %}
+
 		// optional, needed for convenient access from sclang:
 		(
 			~d1 = ~dirt.orbits[0]; ~d2 = ~dirt.orbits[1]; ~d3 = ~dirt.orbits[2];
