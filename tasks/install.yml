@@ -10,7 +10,7 @@
 - name: install supercollider packages
   apt:
     state: present
-    update_cache: yes
+    update_cache: no
     install_recommends: no
     name: [ 'git',
             'supercollider',
