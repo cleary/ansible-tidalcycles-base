@@ -1,0 +1,25 @@
+---
+- block:
+  - apt:
+      state: latest
+      update_cache: yes
+      install_recommends: no
+      name: xvfb
+
+  - template:
+      src: templates/xvfb.tmp.service.template
+      dest: /etc/systemd/system/xvfb.tmp.service
+      owner: root
+      group: root
+
+  - systemd:
+      state: started
+      name: xvfb.tmp.service
+  when: ansible_env.DISPLAY is not defined
+
+- apt:
+    state: present
+    update_cache: yes
+    install_recommends: no
+    name: [ 'coreutils' ]
+

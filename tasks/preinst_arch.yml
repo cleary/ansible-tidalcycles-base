@@ -1,0 +1,23 @@
+---
+- block:
+  - pacman:
+      state: latest
+      update_cache: yes
+      name: xorg-server-xvfb
+
+  - template:
+      src: templates/xvfb.tmp.service.template
+      dest: /etc/systemd/system/xvfb.tmp.service
+      owner: root
+      group: root
+
+  - systemd:
+      state: started
+      name: xvfb.tmp.service
+  when: ansible_env.DISPLAY is not defined
+
+- pacman:
+    state: present
+    update_cache: yes
+    name: [ 'coreutils' ]
+

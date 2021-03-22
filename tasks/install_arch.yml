@@ -1,0 +1,24 @@
+---
+- pacman:
+    state: present
+    update_cache: yes
+    name: [ 'git',
+            'supercollider',
+            'sc3-plugins']
+
+- pacman:
+    state: present
+    update_cache: no
+    name: [ 'ghc',
+            'ghc-libs',
+            'haskell-bifunctors',
+            'haskell-colour',
+            'haskell-hosc',
+            'haskell-mwc-random',
+            'haskell-network',
+            'haskell-primitive',
+            'haskell-random',
+            'haskell-random',
+            'haskell-vector',
+            'haskell-microspec',
+            'haskell-tidal' ]

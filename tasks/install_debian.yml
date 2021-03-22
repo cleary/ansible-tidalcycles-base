@@ -1,0 +1,19 @@
+---
+- apt:
+    state: present
+    update_cache: yes
+    install_recommends: no
+    name: [ 'git',
+            'jackd2',
+            'supercollider',
+            'sc3-plugins',
+            'sc3-plugins-language',
+            'sc3-plugins-server',
+            'zlib1g-dev' ]
+
+- apt:
+    state: present
+    update_cache: yes
+    install_recommends: no
+    name: [ 'cabal-install',
+            'haskell-platform' ]
