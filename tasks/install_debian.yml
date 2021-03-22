@@ -1,5 +1,6 @@
 ---
-- apt:
+- name: install supercollider packages (debian)
+  apt:
     state: present
     update_cache: yes
     install_recommends: no
@@ -11,7 +12,8 @@
             'sc3-plugins-server',
             'zlib1g-dev' ]
 
-- apt:
+- name: install haskell packages (debian)
+  apt:
     state: present
     update_cache: yes
     install_recommends: no

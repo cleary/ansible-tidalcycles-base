@@ -1,12 +1,14 @@
 ---
-- pacman:
+- name: install supercollider packages (Archlinux)
+  pacman:
     state: present
     update_cache: yes
     name: [ 'git',
             'supercollider',
             'sc3-plugins']
 
-- pacman:
+- name: install haskell packages (Archlinux)
+  pacman:
     state: present
     update_cache: no
     name: [ 'ghc',

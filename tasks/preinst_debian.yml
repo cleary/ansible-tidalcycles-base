@@ -1,23 +1,27 @@
 ---
 - block:
-  - apt:
+  - name: install xvfb (debian)
+    apt:
       state: latest
       update_cache: yes
       install_recommends: no
       name: xvfb
 
-  - template:
+  - name: install xvfb service file temporarily (debian)
+    template:
       src: templates/xvfb.tmp.service.template
       dest: /etc/systemd/system/xvfb.tmp.service
       owner: root
       group: root
 
-  - systemd:
+  - name: start xvfb service (debian)
+    systemd:
       state: started
       name: xvfb.tmp.service
   when: ansible_env.DISPLAY is not defined
 
-- apt:
+- name: install ansible task dependencies (debian)
+  apt:
     state: present
     update_cache: yes
     install_recommends: no
