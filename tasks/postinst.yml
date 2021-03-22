@@ -21,7 +21,14 @@
     shell: cabal install tidal
     register: tidin
     changed_when: "not tidin.stdout is search('All the requested packages are already installed:')"
+  
+  when: ansible_distribution_file_variety != "Archlinux"
+  become: yes
+  become_method: su
+  become_user: "{{ansible_env.SUDO_USER}}"
+  become_flags: '-s /bin/bash'
 
+- block:
   - name: create template dest directory ~/.local/share (if required)
     file:
       path: "/home/{{ansible_env.SUDO_USER}}/.local/share"

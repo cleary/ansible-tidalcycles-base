@@ -1,8 +1,16 @@
 ---
 
-- include: preinst.yml
+- include: preinst_debian.yml
+  when: ansible_distribution_file_variety == "Debian"
 
-- include: install.yml
+- include: preinst_arch.yml
+  when: ansible_distribution_file_variety == "Archlinux"
+
+- include: install_debian.yml
+  when: ansible_distribution_file_variety == "Debian"
+
+- include: install_arch.yml
+  when: ansible_distribution_file_variety == "Archlinux"
 
 - include: postinst.yml
 
