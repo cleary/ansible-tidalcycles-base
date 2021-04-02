@@ -23,5 +23,6 @@
   pacman:
     state: present
     update_cache: yes
-    name: [ 'coreutils' ]
+    name: [ 'coreutils',
+            'unzip' ]
 
