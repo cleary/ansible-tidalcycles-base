@@ -28,6 +28,40 @@
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
 
+# mutable ugens install
+- block:
+  - name: set fact for Mutable Instruments ugen installs
+    set_fact:
+      sc_mutable_installed: True
+      sc_synthdefs_installed: True
+
+  - name: create ugens dest directories
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode: 0775
+      recurse: yes
+    with_items:
+      - "{{ sc_ext_dir }}"
+      - "{{ sc_conf_dir }}/{{ sc_synthdef_dir }}"
+
+  - name: download/extract mutable instruments ugens from ndr_brt releases
+    unarchive:
+      src: https://github.com/ndr-brt/mi-UGens/releases/download/v0.0.24/mi-UGens-Linux.zip
+      dest: "{{ sc_ext_dir }}"
+      remote_src: True
+
+  - name: download mutable instruments ugens synth defs from ndr_brt
+    get_url:
+      url: https://raw.githubusercontent.com/ndr-brt/sc-adente/master/synths/mutable.scd
+      dest: "{{ sc_conf_dir }}/{{ sc_synthdef_dir }}/mutable-instruments.scd"
+
+  become: yes
+  become_method: su
+  become_user: "{{ansible_env.SUDO_USER}}"
+  become_flags: '-s /bin/bash'
+  when: '"mutable-instruments" in sc_ugens'
+
 - block:
   - name: create template dest directory ~/.local/share (if required)
     file:
@@ -59,14 +93,14 @@
 
   - name: make sure our SuperCollider config dir exists
     file:
-      path: "{{ sc_dir }}"
+      path: "{{ sc_conf_dir }}"
       state: directory
       mode: 0755
 
   - name: copy SuperCollider startup.scd template (backup any existing)
     template:
       src: templates/startup.scd.template
-      dest: "{{ sc_dir }}/startup.scd"
+      dest: "{{ sc_conf_dir }}/startup.scd"
       mode: 0640
       backup: yes
     tags:

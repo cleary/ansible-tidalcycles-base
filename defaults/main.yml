@@ -1,6 +1,8 @@
 ---
 
-sc_dir: "/home/{{ansible_env.SUDO_USER}}/.config/SuperCollider/"
+sc_conf_dir: "/home/{{ansible_env.SUDO_USER}}/.config/SuperCollider/"
+sc_ext_dir: "/home/{{ansible_env.SUDO_USER}}/.local/share/SuperCollider/Extensions/"
+sc_synthdef_dir: "ansible_tidal_synthdefs"
 
 # supercollider startup.scd defaults, intended for override in vars/all.yml
 sc_option_numBuffers: "1024 * 256"
@@ -10,6 +12,8 @@ sc_option_maxNodes: "1024*32"
 sc_option_numOutputBusChannels: 2
 sc_option_numInputBusChannels: 2
 sc_option_maxLogins: 8
+sc_ugens: [ 
+            "mutable-instruments"
+          ]
 
 superdirt_ver: v1.7.2
-

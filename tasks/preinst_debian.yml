@@ -25,5 +25,6 @@
     state: present
     update_cache: yes
     install_recommends: no
-    name: [ 'coreutils' ]
+    name: [ 'coreutils',
+            'unzip' ]
 
