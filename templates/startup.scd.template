@@ -19,28 +19,15 @@ s.reboot { // server options are only updated on reboot
 	// boot the server and start SuperDirt
 	s.waitForBoot {
 		~dirt = SuperDirt(2, s); // two output channels, increase if you want to pan across more channels
+{% if sc_synthdefs_installed == True %}
+        loadRelative("{{ sc_synthdef_dir}}/*.scd");
+{% endif %}
 		~dirt.loadSoundFiles;   // load samples (path containing a wildcard can be passed in)
 		// for example: ~dirt.loadSoundFiles("/Users/myUserName/Dirt/samples/*");
 {% if custom_sample_paths is defined %}
   {% for item in custom_sample_paths %}
   		~dirt.loadSoundFiles("{{ item }}/*");
   {% endfor %}
-{% endif %}
-
-{% if sc_synthdefs_installed == True %}
-        loadRelative("{{ sc_synthdef_dir}}/*.scd");
-{% endif %}
-{% if sc_mutable_installed == True %}
-        // define global effects for mutable instruments effects
-        ~dirt.orbits.do { |x|
-            var clouds = GlobalDirtEffect(\global_mi_clouds, [\cloudspitch, \cloudspos, \cloudssize, \cloudsdens, \cloudstex, \cloudswet, \cloudsgain, \cloudsspread, \cloudsrvb, \cloudsfb, \cloudsfreeze, \cloudsmode, \cloudslofi]);
-            var verb = GlobalDirtEffect(\global_mi_verb, [\verbwet, \verbtime, \verbdamp, \verbhp, \verbfreeze, \verbdiff, \verbgain]);
-            x.globalEffects = x.globalEffects
-              .addFirst(clouds)
-              .addFirst(verb);
-
-            x.initNodeTree;
-        };
 {% endif %}
 
 		// s.sync; // optionally: wait for samples to be read
@@ -74,6 +61,19 @@ s.reboot { // server options are only updated on reboot
 			~d7 = ~dirt.orbits[6]; ~d8 = ~dirt.orbits[7]; ~d9 = ~dirt.orbits[8];
 			~d10 = ~dirt.orbits[9]; ~d11 = ~dirt.orbits[10]; ~d12 = ~dirt.orbits[11];
 		);
+
+{% if sc_mutable_installed == True %}
+        // define global effects for mutable instruments effects
+        ~dirt.orbits.do { |x|
+            var clouds = GlobalDirtEffect(\global_mi_clouds, [\cloudspitch, \cloudspos, \cloudssize, \cloudsdens, \cloudstex, \cloudswet, \cloudsgain, \cloudsspread, \cloudsrvb, \cloudsfb, \cloudsfreeze, \cloudsmode, \cloudslofi]);
+            var verb = GlobalDirtEffect(\global_mi_verb, [\verbwet, \verbtime, \verbdamp, \verbhp, \verbfreeze, \verbdiff, \verbgain]);
+            x.globalEffects = x.globalEffects
+              .addFirst(clouds)
+              .addFirst(verb);
+            x.initNodeTree;
+        };
+{% endif %}
+
 	};
 
 	s.latency = 0.3; // increase this if you get "late" messages
