@@ -51,9 +51,9 @@
       dest: "{{ sc_ext_dir }}"
       remote_src: True
 
-  - name: download mutable instruments ugens synth defs from ndr_brt
+  - name: copy mutable instruments ugens synth defs
     get_url:
-      url: https://raw.githubusercontent.com/ndr-brt/sc-adente/master/synths/mutable.scd
+      url: https://raw.githubusercontent.com/cleary/ansible-tidalcycles/master/files/mutable-instruments-synthdefs.scd
       dest: "{{ sc_conf_dir }}/{{ sc_synthdef_dir }}/mutable-instruments.scd"
 
   become: yes

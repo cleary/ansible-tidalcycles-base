@@ -13,7 +13,7 @@ sc_option_numOutputBusChannels: 2
 sc_option_numInputBusChannels: 2
 sc_option_maxLogins: 8
 sc_ugens: [ 
-            "mutable-instruments"
+            #"mutable-instruments"
           ]
 
 superdirt_ver: v1.7.2
