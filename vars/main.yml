@@ -1,7 +1,5 @@
 ---
 
-boottidal_hs: "/home/{{ansible_env.SUDO_USER}}/.cabal/share/x86_64-linux-ghc-8.6.5/tidal-1.7.2/BootTidal.hs"
-
 # these are used for templating startup.scd, don't recommend modifying
 sc_synthdefs_installed: False
 sc_mutable_installed: False
