@@ -29,58 +29,9 @@
 
   - name: "set default BootTidal.hs location ({{ tidloc.stdout }})"
     set_fact:
-      boottidal_hs: tidloc.stdout 
+      boottidal_hs: "{{ tidloc.stdout }}/BootTidal.hs"
 
   when: ansible_distribution_file_variety != "Archlinux"
-  become: yes
-  become_method: su
-  become_user: "{{ansible_env.SUDO_USER}}"
-  become_flags: '-s /bin/bash'
-
-- block:
-  - name: create template dest directory ~/.local/share (if required)
-    file:
-      path: "/home/{{ansible_env.SUDO_USER}}/.local/share"
-      state: directory
-      mode: '0775'
-
-  - name: copy superdirt_*.scd templates to ~/.local/share/
-    template:
-      src: "templates/{{ item }}.scd.template"
-      dest: "/home/{{ansible_env.SUDO_USER}}/.local/share/{{ item }}.scd"
-      mode: 0640
-    with_items:
-      - superdirt_install
-
-  - name: set DISPLAY variable for sclang running
-    set_fact:
-      display: :99
-    when: ansible_env.DISPLAY is not defined
-
-  - set_fact:
-      display: "{{ ansible_env.DISPLAY }}"
-    when: display is not defined
-
-  - name: install SuperDirt
-    shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd >> /home/{{ansible_env.SUDO_USER}}/.local/share/sc_install.log"
-    environment:
-      DISPLAY: "{{ display }}"
-
-  - name: make sure our SuperCollider config dir exists
-    file:
-      path: "{{ sc_conf_dir }}"
-      state: directory
-      mode: 0755
-
-  - name: copy SuperCollider startup.scd template (backup any existing)
-    template:
-      src: templates/startup.scd.template
-      dest: "{{ sc_conf_dir }}/startup.scd"
-      mode: 0640
-      backup: yes
-    tags:
-    - config
-
   become: yes
   become_method: su
   become_user: "{{ansible_env.SUDO_USER}}"
@@ -136,6 +87,55 @@
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
   when: sc_ugens is defined and "mutable-instruments" in sc_ugens
+
+- block:
+  - name: create template dest directory ~/.local/share (if required)
+    file:
+      path: "/home/{{ansible_env.SUDO_USER}}/.local/share"
+      state: directory
+      mode: '0775'
+
+  - name: copy superdirt_*.scd templates to ~/.local/share/
+    template:
+      src: "templates/{{ item }}.scd.template"
+      dest: "/home/{{ansible_env.SUDO_USER}}/.local/share/{{ item }}.scd"
+      mode: 0640
+    with_items:
+      - superdirt_install
+
+  - name: set DISPLAY variable for sclang running
+    set_fact:
+      display: :99
+    when: ansible_env.DISPLAY is not defined
+
+  - set_fact:
+      display: "{{ ansible_env.DISPLAY }}"
+    when: display is not defined
+
+  - name: install SuperDirt
+    shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd >> /home/{{ansible_env.SUDO_USER}}/.local/share/sc_install.log"
+    environment:
+      DISPLAY: "{{ display }}"
+
+  - name: make sure our SuperCollider config dir exists
+    file:
+      path: "{{ sc_conf_dir }}"
+      state: directory
+      mode: 0755
+
+  - name: copy SuperCollider startup.scd template (backup any existing)
+    template:
+      src: templates/startup.scd.template
+      dest: "{{ sc_conf_dir }}/startup.scd"
+      mode: 0640
+      backup: yes
+    tags:
+    - config
+
+  become: yes
+  become_method: su
+  become_user: "{{ansible_env.SUDO_USER}}"
+  become_flags: '-s /bin/bash'
 
 - debug:
     msg: "NOTE: {{ansible_env.SUDO_USER}} has been added to audio group, logout/reboot **after** ansible finishes (waiting for 10s)"
