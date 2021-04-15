@@ -13,7 +13,7 @@ sc_option_numOutputBusChannels: 2
 sc_option_numInputBusChannels: 2
 sc_option_maxLogins: 8
 
-superdirt_ver: v1.7.2
+superdirt_ver: v1.7.3
 
 # load ugens, currently supported:
 #  - mutable-instruments (ref https://github.com/v7b1/mi-UGens)
