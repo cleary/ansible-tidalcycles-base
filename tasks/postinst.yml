@@ -112,6 +112,10 @@
       display: "{{ ansible_env.DISPLAY }}"
     when: display is not defined
 
+  - name: get latest superdirt version tag from the repo
+    shell: git ls-remote https://github.com/musikinformatik/SuperDirt.git | grep tags | tail -n1 | awk -F/ '{print $NF}'
+    register: superdirt_ver
+
   - name: install SuperDirt
     shell: "sclang /home/{{ansible_env.SUDO_USER}}/.local/share/superdirt_install.scd >> /home/{{ansible_env.SUDO_USER}}/.local/share/sc_install.log"
     environment:
