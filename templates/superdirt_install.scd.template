@@ -1,4 +1,4 @@
 case
 {Quarks.isInstalled("SuperDirt")}  {Quarks.uninstall("SuperDirt")};
 
-Quarks.checkForUpdates({Quarks.install("SuperDirt", "{{ superdirt_ver.stdout }}"); if (Quarks.isInstalled("SuperDirt"), {0.exit;}, {1.exit;});});
+Quarks.checkForUpdates({Quarks.install("SuperDirt", "{{ superdirt_ver }}"); if (Quarks.isInstalled("SuperDirt"), {0.exit;}, {1.exit;});});
