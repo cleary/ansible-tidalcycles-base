@@ -22,6 +22,13 @@
     register: tidin
     changed_when: "not tidin.stdout is search('All the requested packages are already installed:')"
   
+  when: ansible_distribution_file_variety != "Archlinux"
+  become: yes
+  become_method: su
+  become_user: "{{ansible_env.SUDO_USER}}"
+  become_flags: '-s /bin/bash'
+
+- block:
   - name: get default BootTidal.hs locations
     shell: ghc-pkg field tidal data-dir | head -n 1 | awk '{print $2}'
     register: tidloc
@@ -31,7 +38,6 @@
     set_fact:
       boottidal_hs: "{{ tidloc.stdout }}/BootTidal.hs"
 
-  when: ansible_distribution_file_variety != "Archlinux"
   become: yes
   become_method: su
   become_user: "{{ansible_env.SUDO_USER}}"
@@ -76,16 +82,17 @@
       url: https://raw.githubusercontent.com/cleary/ansible-tidalcycles/master/files/mutable-instruments-ugens_parameters.hs
       dest: "/home/{{ansible_env.SUDO_USER}}/.local/share/ansible-tidalcycles/scripts/mutable-instruments-ugens_parameters.hs"
 
-  - name: load mutable-instruments parameter file in BootTidal.hs
-    lineinfile:
-        path: "{{ boottidal_hs }}"
-        insertbefore: '^:set prompt (.*$)'
-        line: ":script /home/{{ansible_env.SUDO_USER}}/.local/share/ansible-tidalcycles/scripts/mutable-instruments-ugens_parameters.hs"
-
   become: yes
   become_method: su
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
+  when: sc_ugens is defined and "mutable-instruments" in sc_ugens
+
+- name: load mutable-instruments parameter file in BootTidal.hs
+  lineinfile:
+      path: "{{ boottidal_hs }}"
+      insertbefore: '^:set prompt (.*$)'
+      line: ":script /home/{{ansible_env.SUDO_USER}}/.local/share/ansible-tidalcycles/scripts/mutable-instruments-ugens_parameters.hs"
   when: sc_ugens is defined and "mutable-instruments" in sc_ugens
 
 - block:
