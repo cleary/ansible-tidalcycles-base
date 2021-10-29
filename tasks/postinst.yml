@@ -54,6 +54,7 @@
   - name: get latest superdirt version tag from the repo
     shell: git ls-remote https://github.com/musikinformatik/SuperDirt.git | grep tags | tail -n1 | awk -F/ '{print $NF}'
     register: sdver
+    changed_when: false
 
   - set_fact:
       superdirt_ver: "{{ sdver.stdout }}"
