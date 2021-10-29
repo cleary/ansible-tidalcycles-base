@@ -42,52 +42,7 @@
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
 
-# mutable ugens install
-- block:
-  - name: set fact for Mutable Instruments ugen installs
-    set_fact:
-      sc_mutable_installed: True
-      sc_synthdefs_installed: True
-
-  - name: create ugens dest directories
-    file:
-      path: "{{ item }}"
-      state: directory
-      mode: 0775
-      recurse: yes
-    with_items:
-      - "{{ sc_ext_dir }}"
-      - "{{ sc_conf_dir }}/{{ sc_synthdef_dir }}"
-
-  - name: download/extract mutable instruments ugens from ndr_brt releases
-    unarchive:
-      src: https://github.com/ndr-brt/mi-UGens/releases/download/v0.0.24/mi-UGens-Linux.zip
-      dest: "{{ sc_ext_dir }}"
-      remote_src: True
-
-  - name: copy mutable instruments ugens synth defs
-    get_url:
-      url: https://raw.githubusercontent.com/cleary/ansible-tidalcycles/master/files/mutable-instruments-synthdefs.scd
-      dest: "{{ sc_conf_dir }}/{{ sc_synthdef_dir }}/mutable-instruments.scd"
-
-  - name: create required config scripts directory
-    file:
-      path: "/home/{{ansible_env.SUDO_USER}}/.local/share/ansible-tidalcycles/scripts/"
-      state: directory
-      recurse: yes
-
-  - name: copy mutable-instruments params file to scripts dir
-    get_url:
-      url: https://raw.githubusercontent.com/cleary/ansible-tidalcycles/master/files/mutable-instruments-ugens_parameters.hs
-      dest: "/home/{{ansible_env.SUDO_USER}}/.local/share/ansible-tidalcycles/scripts/mutable-instruments-ugens_parameters.hs"
-
-  become: yes
-  become_method: su
-  become_user: "{{ansible_env.SUDO_USER}}"
-  become_flags: '-s /bin/bash'
-  when: sc_ugens is defined and "mutable-instruments" in sc_ugens
-
-- name: load mutable-instruments parameter file in BootTidal.hs
+- name: load mutable-instruments parameter file in BootTidal.hs (if required)
   lineinfile:
       path: "{{ boottidal_hs }}"
       insertbefore: '^:set prompt (.*$)'
