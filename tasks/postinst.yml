@@ -16,6 +16,7 @@
 - block:
   - name: update cabal
     shell: cabal update  
+  changed_when: false
 
   - name: compile and install tidal
     shell: cabal install tidal
