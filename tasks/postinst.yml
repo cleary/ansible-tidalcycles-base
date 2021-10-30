@@ -107,6 +107,11 @@
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
 
+- include_role:
+    name: "roles/ugens-{{ item }}"
+  with_items: "{{ sc_ugens }}"
+  when: sc_ugens is defined
+
 - debug:
     msg: "NOTE: {{ansible_env.SUDO_USER}} has been added to audio group, logout/reboot **after** ansible finishes (waiting for 10s)"
   when: adduser.changed

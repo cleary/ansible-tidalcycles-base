@@ -1,2 +1,0 @@
-dependencies:
-  - { role: roles/ugens-mutable-instruments, when: sc_ugens is defined and "mutable-instruments" in sc_ugens }
