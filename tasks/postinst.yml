@@ -43,12 +43,12 @@
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
 
-- name: load mutable-instruments parameter file in BootTidal.hs (if required)
-  lineinfile:
-      path: "{{ boottidal_hs }}"
-      insertbefore: '^:set prompt (.*$)'
-      line: ":script /home/{{ansible_env.SUDO_USER}}/.local/share/ansible-tidalcycles/scripts/mutable-instruments-ugens_parameters.hs"
-  when: sc_ugens is defined and "mutable-instruments" in sc_ugens
+- include_role:
+    name: "roles/ugens-{{ item }}"
+  vars:
+    editor: "{{ neovim.editor }}"
+  with_items: "{{ sc_ugens }}"
+  when: sc_ugens is defined
 
 - block:
   - name: get latest superdirt version tag from the repo
