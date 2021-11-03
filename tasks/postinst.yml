@@ -46,7 +46,7 @@
 - include_role:
     name: "roles/ugens-{{ item }}"
   vars:
-    editor: "{{ neovim.editor }}"
+    editor: None
   with_items: "{{ sc_ugens }}"
   when: sc_ugens is defined
 
