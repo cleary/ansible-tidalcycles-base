@@ -19,6 +19,7 @@ s.reboot { // server options are only updated on reboot
 	// boot the server and start SuperDirt
 	s.waitForBoot {
 		~dirt = SuperDirt(2, s); // two output channels, increase if you want to pan across more channels
+        ~dirt.doNotReadYet = true; // load samples on demand, memory saving
 {% if sc_synthdefs_installed == True %}
         loadRelative("{{ sc_synthdef_dir}}/*.scd");
 {% endif %}
