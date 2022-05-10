@@ -1,5 +1,5 @@
 ---
-- name: install supercollider packages (debian)
+- name: install supercollider dependencies (debian)
   apt:
     state: present
     update_cache: yes
@@ -11,6 +11,32 @@
             'sc3-plugins-language',
             'sc3-plugins-server',
             'zlib1g-dev' ]
+
+- name: get installed SuperCollider version in case it has been built from source
+  shell: sclang -v | awk '{print $2}'
+  register: sc_ver
+  failed_when: false
+  changed_when: false
+
+- name: get packaged SuperCollider version to compare (if required)
+  shell: >
+      apt-cache show supercollider | grep -m 1 "^Version:" | awk -F: '{print $3}' | awk -F+ '{print $1}'
+  register: sc_avail
+  when: sc_ver is defined
+  changed_when: false
+
+- block:
+  - name: install supercollider packages (debian)
+    apt:
+      state: present
+      update_cache: yes
+      install_recommends: no
+      name: [ 'supercollider',
+              'sc3-plugins',
+              'sc3-plugins-language',
+              'sc3-plugins-server' ]
+  when:
+    sc_ver is defined and sc_ver.stdout < sc_avail.stdout
 
 - name: install haskell packages (debian)
   apt:
