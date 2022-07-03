@@ -22,6 +22,7 @@ s.reboot { // server options are only updated on reboot
 {% if sc_synthdefs_installed == True %}
         loadRelative("{{ sc_synthdef_dir}}/*.scd");
 {% endif %}
+		~dirt.doNotReadYet = true; //lazy sample loading
 		~dirt.loadSoundFiles;   // load samples (path containing a wildcard can be passed in)
 		// for example: ~dirt.loadSoundFiles("/Users/myUserName/Dirt/samples/*");
 {% if custom_sample_paths is defined %}
