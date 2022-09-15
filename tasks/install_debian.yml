@@ -40,3 +40,11 @@
     install_recommends: no
     name: [ 'cabal-install',
             'haskell-platform' ]
+
+- name: install tidal build-dep packages (debian)
+  apt:
+    state: present
+    update_cache: yes
+    install_recommends: no
+    name: [ 'gcc',
+            'g++' ]
