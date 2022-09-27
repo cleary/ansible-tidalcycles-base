@@ -14,14 +14,30 @@
   changed_when: false
 
 - block:
+  - name: get cabal version
+    shell: cabal --numeric-version
+    register: cabver
+    changed_when: false
+
+  - set_fact:
+      current_cabal: "{{ cabver.stdout }}"
+      new_cabal_syntax_ver: 3.0.0.0
+
   - name: update cabal
     shell: cabal update  
     changed_when: false
 
-  - name: compile and install tidal
+  - name: "compile and install tidal using --lib (cabal >= {{ new_cabal_syntax_ver }})"
+    shell: cabal install tidal --lib
+    register: tidin
+    changed_when: "not tidin.stdout is search('All the requested packages are already installed:')"
+    when: current_cabal is version(new_cabal_syntax_ver, '>=')
+
+  - name: "compile and install tidal (cabal < {{ new_cabal_syntax_ver }})"
     shell: cabal install tidal
     register: tidin
     changed_when: "not tidin.stdout is search('All the requested packages are already installed:')"
+    when: current_cabal is version(new_cabal_syntax_ver, '<')
   
   become: yes
   become_method: su
