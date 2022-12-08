@@ -45,8 +45,8 @@
   become_flags: '-s /bin/bash'
 
 - block:
-  - name: get default BootTidal.hs locations
-    shell: ghc-pkg field tidal data-dir | head -n 1 | awk '{print $2}'
+  - name: get default BootTidal.hs location
+    shell: ghci -e Paths_tidal.getDataDir | head -n 1 | awk '{print substr($0,2,length()-2);}'
     register: tidloc
     changed_when: False
 
