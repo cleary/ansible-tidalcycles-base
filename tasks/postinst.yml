@@ -27,6 +27,33 @@
     shell: cabal update  
     changed_when: false
 
+  - name: find the GHC environment (best guess, use highest ver number if multiple exist)
+    shell: "find {{ansible_env.SUDO_USER}}/.ghc -type f -name default | sort -V | tail -n 1"
+    register: ghcdef
+    changed_when: false
+
+  - name: get installed tidal version (if any)
+    shell: "grep \"^package-id tidal-[0-9]\" {{ ghcdef.stdout }} | cut -d- -f3"
+    register: tidin
+    changed_when: false
+
+  - name: get latest available tidal version
+    shell: "cabal list tidal --simple-output | grep \"^tidal \" | sort -V | tail -n 1 | cut -d' ' -f2"
+    register: tidavail
+    changed_when: false
+
+  become: yes
+  become_method: su
+  become_user: "{{ansible_env.SUDO_USER}}"
+  become_flags: '-s /bin/bash'
+
+- block:
+  - name: remove old tidal versions from ghc env default to allow upgrade (?!)
+    lineinfile:
+      path: "{{ ghcdef.stdout }}"
+      state: absent
+      regexp: '^package-id tidal-[0-9]'
+
   - name: "compile and install tidal using --lib (cabal >= {{ new_cabal_syntax_ver }})"
     shell: cabal install tidal --lib
     register: tidin
@@ -43,6 +70,8 @@
   become_method: su
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
+  when: (tidin is not defined) or
+        (tidin.stdout < tidavail.stdout)
 
 - include_role:
     name: "roles/ugens-{{ item }}"
