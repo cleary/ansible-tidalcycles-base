@@ -56,6 +56,7 @@
 
   - debug:
       msg: "Newer version of tidal available, upgrading to v{{ tidavail.stdout }}"
+    when: current_cabal is version(new_cabal_syntax_ver, '>=')
 
   - name: "compile and install tidal using --lib (cabal >= {{ new_cabal_syntax_ver }})"
     shell: "cabal install tidal-{{tidavail.stdout}} --lib"
@@ -63,8 +64,8 @@
     changed_when: "not tidin.stdout is search('All the requested packages are already installed:')"
     when: current_cabal is version(new_cabal_syntax_ver, '>=')
 
-  - name: "compile and install tidal (cabal < {{ new_cabal_syntax_ver }})"
-    shell: "cabal install tidal-{{tidavail.stdout}}"
+  - name: "compile and install legacy tidal (cabal < {{ new_cabal_syntax_ver }})"
+    shell: cabal install tidal
     register: tidin
     changed_when: "not tidin.stdout is search('All the requested packages are already installed:')"
     when: current_cabal is version(new_cabal_syntax_ver, '<')
