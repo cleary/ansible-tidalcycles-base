@@ -33,7 +33,7 @@
     changed_when: false
 
   - name: get installed tidal version (if any)
-    shell: "grep \"^package-id tidal-[0-9]\" {{ ghcdef.stdout }} | cut -d- -f3"
+    shell: "grep \"^package-id tidal-[0-9]\" {{ ghcdef.stdout }} | sort -V | tail -n 1 | cut -d- -f3"
     register: tidcurr
     changed_when: false
 
