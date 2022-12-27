@@ -28,13 +28,13 @@
     changed_when: false
 
   - name: find the GHC environment (best guess, use highest ver number if multiple exist)
-    shell: "find {{ansible_env.SUDO_USER}}/.ghc -type f -name default | sort -V | tail -n 1"
+    shell: "find /home/{{ansible_env.SUDO_USER}}/.ghc -type f -name default | sort -V | tail -n 1"
     register: ghcdef
     changed_when: false
 
   - name: get installed tidal version (if any)
     shell: "grep \"^package-id tidal-[0-9]\" {{ ghcdef.stdout }} | cut -d- -f3"
-    register: tidin
+    register: tidcurr
     changed_when: false
 
   - name: get latest available tidal version
@@ -54,14 +54,17 @@
       state: absent
       regexp: '^package-id tidal-[0-9]'
 
+  - debug:
+      msg: "Newer version of tidal available, upgrading to v{{ tidavail.stdout }}"
+
   - name: "compile and install tidal using --lib (cabal >= {{ new_cabal_syntax_ver }})"
-    shell: cabal install tidal --lib
+    shell: "cabal install tidal-{{tidavail.stdout}} --lib"
     register: tidin
     changed_when: "not tidin.stdout is search('All the requested packages are already installed:')"
     when: current_cabal is version(new_cabal_syntax_ver, '>=')
 
   - name: "compile and install tidal (cabal < {{ new_cabal_syntax_ver }})"
-    shell: cabal install tidal
+    shell: "cabal install tidal-{{tidavail.stdout}}"
     register: tidin
     changed_when: "not tidin.stdout is search('All the requested packages are already installed:')"
     when: current_cabal is version(new_cabal_syntax_ver, '<')
@@ -70,8 +73,8 @@
   become_method: su
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
-  when: (tidin is not defined) or
-        (tidin.stdout < tidavail.stdout)
+  when: (tidcurr is not defined) or
+        (tidcurr.stdout < tidavail.stdout)
 
 - include_role:
     name: "roles/ugens-{{ item }}"
