@@ -39,7 +39,7 @@
     update_cache: yes
     install_recommends: no
     name: [ 'cabal-install',
-            'haskell-platform' ]
+            'ghc' ]
 
 - name: install tidal build-dep packages (debian)
   apt:
