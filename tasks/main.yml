@@ -1,10 +1,10 @@
 ---
 
-- include: preinst_debian.yml
+- include_tasks: preinst_debian.yml
   when: ansible_os_family == "Debian"
 
-- include: install_debian.yml
+- include_tasks: install_debian.yml
   when: ansible_os_family == "Debian"
 
-- include: postinst.yml
+- include_tasks: postinst.yml
 
