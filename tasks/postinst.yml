@@ -24,7 +24,7 @@
       new_cabal_syntax_ver: 3.0.0.0
 
   - name: update cabal
-    shell: cabal update  
+    shell: cd ~/ ; cabal update  
     changed_when: false
 
   - name: find the GHC environment (best guess, use highest ver number if multiple exist)
